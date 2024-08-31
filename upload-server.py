@@ -70,7 +70,8 @@ class CustomHTTPRequestHandler(SimpleHTTPRequestHandler):
 def main(args):
     serveDir = Path(os.path.realpath(args.directory))
     os.chdir(serveDir)
-    print(f"Saving to {serveDir} on {args.ip}:{args.port}")
+    print(f"Listening on {args.ip}:{args.port}")
+    print(f"Files will be save to {serveDir}")
     
     if args.secret:
         global SECRET
