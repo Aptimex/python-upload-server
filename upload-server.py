@@ -88,10 +88,10 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="HTTP server that accepts POST requests and saves them to a file. Best used with \"curl --data-binary '@myFile.txt' IP:PORT/myFile.txt\"")
-    parser.add_argument("port", type=int, default=8123, nargs='?', help="Port to listen on")
+    parser.add_argument("port", type=int, default=8123, nargs='?', help="Port to listen on; default is 8123")
     parser.add_argument("-d", "--directory", default="./", help="Directory to save files to")
     parser.add_argument("-i", "--ip", default="0.0.0.0", help="IP to listen on")
-    parser.add_argument("-s", "--secret", default=None, help="If specified, this (case-sensitive, alphanumeric) value must be present as a URL parameter for the server to accept the file. E.g. http://1.2.3.4/file?mySecretParam")
+    parser.add_argument("-s", "--secret", default=None, help="If specified, this (case-sensitive, alphanumeric) value must be present as a URL parameter for the server to accept the file. E.g. http://1.2.3.4:8123/file?mySecretParam")
     
     args = parser.parse_args()
     main(args)

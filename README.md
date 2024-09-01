@@ -1,16 +1,10 @@
 # Python Upload Server
 
-Relatively simple Python server that accepts POST requests and saves the body contents to a file. I mainly use it for transferring files from Windows to Linux. 
-
-Features:
-- Specify a directory to save files to (default `./`)
-- Specify the IP to listen on (default `0.0.0.0`)
-- Specify the port to listen on (default `8123`)
-- Specify an optional secret value that must be included in the `secret` URL parameter or else the request will be rejected
+Relatively simple Python server that accepts POST requests and saves the body contents to a file. I mainly use it for quickly transferring files from Windows to Linux. 
 
 If a path is specified in the request, the part after the final `/` (minus any URL parameters or such) will be treated as the filename that it should be saved to. For example:
 ```
-POST http://192.168.1.2:8123/myFile.txt?hello=garbage
+POST http://1.2.3.4:8123/myFile.txt?hello=garbage
 ```
 will cause the file to be saved to `myFile.txt`. 
 
@@ -21,7 +15,7 @@ usage: upload-server.py [-h] [-d DIRECTORY] [-i IP] [-s SECRET] [port]
 HTTP server that accepts POST requests and saves them to a file. Best used with "curl --data-binary '@myFile.txt' IP:PORT/myFile.txt"
 
 positional arguments:
-  port                  Port to listen on
+  port                  Port to listen on; default is 8123
 
 options:
   -h, --help            show this help message and exit
@@ -30,7 +24,7 @@ options:
   -i IP, --ip IP        IP to listen on
   -s SECRET, --secret SECRET
                         If specified, this (case-sensitive, alphanumeric) value must be present as a URL parameter for the server to
-                        accept the file. E.g. http://1.2.3.4/file?mySecretParam
+                        accept the file. E.g. http://1.2.3.4:8123/file?mySecretParam
 ```
 
 ## Examples
@@ -38,6 +32,8 @@ Start the server with a secret parameter, listening on 8080, saving files to the
 ```
 python3 ./upload-server.py 8080 -s mySecretParam
 ```
+
+---
 
 Send a file in the current working dir to the server using PowerShell:
 ```PowerShell
