@@ -19,15 +19,12 @@ class CustomHTTPRequestHandler(SimpleHTTPRequestHandler):
         return
 
     def do_POST(self):
-        # Only accept requests that know the secret (if one was specified)
+        # If a secret was specified, immediately ignore any requests that do not include it
         if SECRET:
             try:
-                q = parse_qs(urlparse(self.path).query)
-                secret = q.get("secret")[0]
-                #print(f"Got secret: {secret}")
-                
-                if secret != SECRET:
-                    raise Exception("Secret doesn't match") 
+                q = parse_qs(urlparse(self.path).query, keep_blank_values=True)
+                if not q.get(SECRET):
+                    raise Exception(f"Secret value '{SECRET}' not found in URL parameters of request: {self.path}") 
                     
             except Exception as e:
                 # If there's any issue at all, minimal 404 response
@@ -62,8 +59,6 @@ class CustomHTTPRequestHandler(SimpleHTTPRequestHandler):
             output_file.write(self.rfile.read(file_length))
         self.send_response(201, 'Created')
         self.end_headers()
-        #reply_body = 'Saved "{}"\n'.format(filename)
-        #self.wfile.write(reply_body.encode('utf-8'))
         
         print(f"File of size {file_length} bytes saved to {filePath}")
 
@@ -81,8 +76,12 @@ def main(args):
     if args.secret:
         global SECRET
         SECRET = args.secret
-        print(f"Uploads must include the 'secret={SECRET}' URL parameter")
+        print(f"Uploads must include the '{SECRET}' URL parameter")
+        
+        if not SECRET.isalnum():
+            print("WARNING: secret contains non-alphanumeric characters; this server might not be able to recognize it in requests.")
     
+    print()
     # Start the server
     httpd = HTTPServer((args.ip, args.port), CustomHTTPRequestHandler)
     httpd.serve_forever()
@@ -92,7 +91,7 @@ if __name__ == '__main__':
     parser.add_argument("port", type=int, default=8123, nargs='?', help="Port to listen on")
     parser.add_argument("-d", "--directory", default="./", help="Directory to save files to")
     parser.add_argument("-i", "--ip", default="0.0.0.0", help="IP to listen on")
-    parser.add_argument("-s", "--secret", default=None, help="If specified, this value must be present as a URL 'secret' (case-sensitive) parameter for the server to accept the file. E.g. 1.2.3.4/file?secret=mySuperSecret")
+    parser.add_argument("-s", "--secret", default=None, help="If specified, this (case-sensitive, alphanumeric) value must be present as a URL parameter for the server to accept the file. E.g. http://1.2.3.4/file?mySecretParam")
     
     args = parser.parse_args()
     main(args)
