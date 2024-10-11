@@ -1,10 +1,10 @@
 # Python Upload Server
 
-Relatively simple Python server that accepts POST requests and saves the body contents to a file. I mainly use it for quickly transferring files from Windows to Linux. 
+Relatively simple Python server that accepts POST and PUT requests and saves the body contents to a file. I mainly use it for quickly transferring files from Windows to Linux. 
 
 If a path is specified in the request, the part after the final `/` (minus any URL parameters or such) will be treated as the filename that it should be saved to. For example:
 ```
-POST http://1.2.3.4:8123/myFile.txt?hello=garbage
+POST http://1.2.3.4:8123/stuff/myFile.txt?hello=garbage
 ```
 will cause the file to be saved to `myFile.txt`. 
 
@@ -12,7 +12,7 @@ will cause the file to be saved to `myFile.txt`.
 ```
 usage: upload-server.py [-h] [-d DIRECTORY] [-i IP] [-s SECRET] [port]
 
-HTTP server that accepts POST requests and saves them to a file. Best used with "curl --data-binary '@myFile.txt' IP:PORT/myFile.txt"
+HTTP server that accepts POST and PUT requests and saves the body content to a file. Best used with \"curl -T ./myFile.txt IP:PORT/myFile.txt\"
 
 positional arguments:
   port                  Port to listen on; default is 8123
@@ -41,9 +41,9 @@ Invoke-WebRequest -Uri http://1.2.3.4:8080/differentName.bin?mySecretParam -Meth
 ```
 - Also works with `Invoke-RestMethod` using the same parameters
 
-Send a file in the current working dir to the server using curl:
+Send a file to the server using curl:
 ```bash
-curl --data-binary '@myFile.bin' http://1.2.3.4:8080/differentName.bin?mySecretParam
+curl -T ./myFile.bin http://1.2.3.4:8080/differentName.bin?mySecretParam
 ```
 - Also works with `curl.exe` on recent versions of Windows
 

@@ -61,6 +61,10 @@ class CustomHTTPRequestHandler(SimpleHTTPRequestHandler):
         self.end_headers()
         
         print(f"File of size {file_length} bytes saved to {filePath}")
+    
+    # Treat PUT just like POST
+    def do_PUT(self):
+        self.do_POST()
 
 def main(args):
     # Make sure we're saving to a valid directory
@@ -87,7 +91,7 @@ def main(args):
     httpd.serve_forever()
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description="HTTP server that accepts POST requests and saves them to a file. Best used with \"curl --data-binary '@myFile.txt' IP:PORT/myFile.txt\"")
+    parser = argparse.ArgumentParser(description="HTTP server that accepts POST and PUT requests and saves the body content to a file. Best used with \"curl -T ./myFile.txt IP:PORT/myFile.txt\"")
     parser.add_argument("port", type=int, default=8123, nargs='?', help="Port to listen on; default is 8123")
     parser.add_argument("-d", "--directory", default="./", help="Directory to save files to")
     parser.add_argument("-i", "--ip", default="0.0.0.0", help="IP to listen on")
