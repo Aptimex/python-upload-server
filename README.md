@@ -4,7 +4,7 @@ Relatively simple Python server that accepts POST and PUT requests and saves the
 
 If a path is specified in the request, the part after the final `/` (minus any URL parameters or such) will be treated as the filename that it should be saved to. For example:
 ```
-POST http://1.2.3.4:8123/stuff/myFile.txt?hello=garbage
+POST http://1.2.3.4:8123/stuff/myFile.txt?param=anything
 ```
 will cause the file to be saved to `myFile.txt`. 
 
@@ -43,7 +43,7 @@ Invoke-WebRequest -Uri http://1.2.3.4:8080/differentName.bin?mySecretParam -Meth
 
 Send a file to the server using curl:
 ```bash
-curl -T ./myFile.bin http://1.2.3.4:8080/differentName.bin?mySecretParam
+curl -T ./myFile.bin 1.2.3.4:8080/differentName.bin?mySecretParam
 ```
 - Also works with `curl.exe` on recent versions of Windows
 

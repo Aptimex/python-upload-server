@@ -7,7 +7,12 @@ from pathlib import Path
 from urllib.parse import urlparse, parse_qs
 from http.server import HTTPServer, BaseHTTPRequestHandler, SimpleHTTPRequestHandler
 
+# SECRET is set dynamically at runtime with -s
 SECRET = None
+
+# PART_SIZE is hardcoded; writes out larger files in chunks of this size to limit memory usage 
+# This also significantly speeds up large transfers, but idk why
+PART_SIZE = 256 * 1024 * 1024 #256MB
 
 class CustomHTTPRequestHandler(SimpleHTTPRequestHandler):
     
@@ -54,13 +59,24 @@ class CustomHTTPRequestHandler(SimpleHTTPRequestHandler):
             else:
                 filePath = f"{filePath}_{i}"
         
-        # Write the request body 
+        # Write the request body to a file
         with open(filePath, 'wb') as output_file:
-            output_file.write(self.rfile.read(file_length))
+            print(f"Recieving file '{filename}' with size {file_length} from {self.client_address[0]}")
+            
+            numParts = file_length // PART_SIZE
+            if file_length % PART_SIZE != 0:
+                numParts += 1
+                
+            for i in range(numParts):
+                print(f"Writing part {i+1} of {numParts}")
+                remainingSize = file_length - (i * PART_SIZE)
+                output_file.write(self.rfile.read(min(PART_SIZE, remainingSize)))
+        
         self.send_response(201, 'Created')
         self.end_headers()
         
         print(f"File of size {file_length} bytes saved to {filePath}")
+        print()
     
     # Treat PUT just like POST
     def do_PUT(self):
